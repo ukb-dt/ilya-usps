@@ -46,8 +46,7 @@ This is not a finished philosophy. It is a **v1.0 spec**. It is an invitation to
 
 We ship now not because it is perfect, but because it is **operational**. The wavefunction has collapsed. The integral is evaluated. The system is live.
 
-—  
-The Architect
+—  The Architect
 
 # A
 
