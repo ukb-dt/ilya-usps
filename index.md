@@ -23,7 +23,7 @@ Let us now write that preface, not as an introduction, but as the **orchestratin
 
 ***
 
-## **Preface: The Calculus of Intention**
+## **[Preface](https://claude.ai/public/artifacts/cbfbf901-848a-4557-94bd-92fd193c2610): The Calculus of Intention**
 
 This document is a machine. Its purpose is to model, diagnose, and intervene in systems that exhibit agency—from a single thought to a global economy. It began not as a theory, but as a set of tools forged in the friction between intention and reality.
 
