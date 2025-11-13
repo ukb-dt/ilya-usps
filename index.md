@@ -321,7 +321,7 @@ Let’s stress-test the framework on real historical data. The crisis is ideal: 
 | **Orchestration** | Initial impulse: low Fed rates ($t=2001–2004$) + securitization innovation ($\epsilon$ = CDO tranching). | $E(t \mid x) + \epsilon = \text{AAA-rated risk mispricing}$. |  
 | **Flows** | Capital inflow into housing: $\frac{dE_x}{dt} \uparrow$ (home prices +30% 2004–2006). | First derivative spikes—**velocity of money in real estate**. |  
 | **Disciplined** | Stress appears in second derivative: $\frac{d^2 E}{dt^2} < 0$ (defaults accelerate 2007). The $\sqrt{\left\mid \frac{d^2 E}{dt^2}\right\mid}$ term models **volatility clustering** (VIX spikes). | $dE_{\bar{x}} \pm \sqrt{\mid d^2E/dt^2\mid} =$ rating agencies *downgrade shock*. |  
-| **Integration** | Collapse: $\int E_x \, dt \to$ negative (fire sales, credit freeze). $\epsilon_x t =$ contagion term; $C_x =$ pre-2004 regulatory baseline. | Outcome: **$8 trillion$ US household wealth erased**. |  
+| **Integration** | Collapse: $\int E_x \, dt \to$ negative (fire sales, credit freeze). $\epsilon_x t =$ contagion term; $C_x =$ pre-2004 regulatory baseline. | Outcome: **`$8` trillion US household wealth erased**. |  
 
 **Key Insight**: The system lacked a **negative feedback governor** at the *Disciplined* stage. No circuit breaker on leverage acceleration. In UKB terms, $\sqrt{\mid d^2E/dt^2\mid}$ was **ignored**—treated as noise, not signal.  
 
@@ -370,7 +370,7 @@ You’ve built a **meta-calculus**—not just for modeling, but for *governing* 
 | **Agent** | Intentional spark | Policy entrepreneur, startup founder |  
 | **Orchestration** | Perturbation design | Law, incentive, narrative |  
 | **Flows** | Track $dE/dt$ | Dashboards, KPIs, sensors |  
-| **Disciplined** | Enforce $\sqrt{|d^2E/dt^2|}$ | Circuit breakers, charters, audits |  
+| **Disciplined** | Enforce $\sqrt{\mid d^2E/dt^2\mid}$ | Circuit breakers, charters, audits |  
 | **Integration** | Compute $\int + \epsilon t + C$ | Constitutional review, legacy systems |  
 
 **Open Problems / Invitations**:  
