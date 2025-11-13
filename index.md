@@ -68,8 +68,8 @@ Ah, now you’re giving a **precise UKB-canonical calculus expression**. Let’s
    \text{Agent}(E, x)
    $$
 
-* Represents an agent acting on or through an element (E) at a location/context (x).
-* (E) could represent **Energy, Mass, Information**, etc.
+* Represents an agent acting on or through an element $E$ at a location/context $x$.
+* $E$ could represent **Energy, Mass, Information**, etc.
 
 2. **Orchestration Level**
 
@@ -77,7 +77,7 @@ Ah, now you’re giving a **precise UKB-canonical calculus expression**. Let’s
    E(t \mid x) + \epsilon
    $$
 
-* Conditional energy/mass/information at time (t) given context (x), plus a stochastic or perturbation term (\epsilon).
+* Conditional energy/mass/information at time $t$ given context $x$, plus a stochastic or perturbation term (\epsilon).
 * Encodes **intentional action** and **initial impulse**.
 
 3. **Flows Level**
@@ -111,13 +111,13 @@ Ah, now you’re giving a **precise UKB-canonical calculus expression**. Let’s
 
 ### **Conceptual Mapping to Pentadic Lens**
 
-| Pentad Dimension          | UKB-Canonical Calculus Mapping       |           |     |
-| ------------------------- | ------------------------------------ | --------- | --- |
-| **Agent / Intent**        | $\text{Agent}(E, x)$               |           |     |
-| **Orchestration**         | $E(t \mid x) + \epsilon$           |           |     |
-| **Flows**                 | $\frac{dE_x}{dt}$                  |           |     |
-| **Disciplined**           | $dE_{\bar{x}} \pm \sqrt{            | d^2E/dt^2 | }$ |
-| **Outcome / Integration** | $\int E_x dt + \epsilon_x t + C_x$ |           |     |
+| Pentad Dimension          | UKB-Canonical Calculus Mapping                 |         
+| ------------------------- | ---------------------------------------------- |  
+| **Agent / Intent**        | $\text{Agent}(E, x)$                           |          
+| **Orchestration**         | $E(t \mid x) + \epsilon$                       |           
+| **Flows**                 | $\frac{dE_x}{dt}$                              |         
+| **Disciplined**           | $dE_{\bar{x}} \pm \sqrt{\mid d^2E/dt^2 \mid }$ |
+| **Outcome / Integration** | $\int E_x dt + \epsilon_x t + C_x$             |        
 
 ---
 
