@@ -429,3 +429,339 @@ The entire final package is the **Epilogue** of the UKB system architecture.
 ***
 
 Would you like to formalize the **UKB Stability Theorem** from Section F for publication, perhaps defining the constraints on the $\beta$ parameter more precisely?
+
+```py
+import React, { useState, useEffect } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { Play, Pause, RotateCcw, AlertTriangle, CheckCircle } from 'lucide-react';
+
+const UKBDigitalTwin = () => {
+  const [isRunning, setIsRunning] = useState(false);
+  const [time, setTime] = useState(0);
+  const [data, setData] = useState([]);
+  const [params, setParams] = useState({
+    epsilon: 2.0,      // Initial perturbation
+    beta: 5.0,         // Stability threshold
+    diffusion: 0.3,    // κ - diffusion coefficient
+    gamma: 0.1         // Damping/friction
+  });
+  const [systemState, setSystemState] = useState({
+    E: 100,            // Energy/value
+    dEdt: 0,           // Flow velocity
+    d2Edt2: 0,         // Acceleration
+    volatility: 0,     // √|d²E/dt²|
+    isStable: true
+  });
+  const [scenario, setScenario] = useState('policy');
+
+  const scenarios = {
+    policy: { epsilon: 2.0, beta: 5.0, diffusion: 0.3, gamma: 0.1, name: 'Policy Intervention' },
+    crisis: { epsilon: 8.0, beta: 3.0, diffusion: 0.5, gamma: 0.05, name: '2008-Style Crisis' },
+    postal: { epsilon: 0.5, beta: 2.0, diffusion: 0.1, gamma: 0.2, name: 'Postal Logistics' },
+    market: { epsilon: 3.0, beta: 4.0, diffusion: 0.4, gamma: 0.15, name: 'Market Shock' }
+  };
+
+  // UKB Core Calculus
+  const updateSystem = () => {
+    setSystemState(prev => {
+      const { E, dEdt, d2Edt2 } = prev;
+      const { epsilon, beta, diffusion, gamma } = params;
+      
+      // Orchestration: E(t|x) + ε with noise
+      const noise = (Math.random() - 0.5) * 0.5;
+      const orchestratedE = E + epsilon * Math.sin(time / 10) + noise;
+      
+      // Flows: dE/dt = -κ∇²E - γ(dE/dt) + perturbation
+      const flowAccel = -diffusion * (E - 100) - gamma * dEdt + epsilon * Math.cos(time / 10);
+      const newDEdt = dEdt + flowAccel * 0.1;
+      
+      // Disciplined: d²E/dt² acceleration
+      const newD2Edt2 = (newDEdt - dEdt) / 0.1;
+      
+      // Volatility: √|d²E/dt²|
+      const volatility = Math.sqrt(Math.abs(newD2Edt2));
+      
+      // Integration: ∫E dt + εt + C
+      const newE = E + newDEdt * 0.1;
+      
+      // Stability check: β ≥ √|d²E/dt²|
+      const isStable = volatility <= beta;
+      
+      return {
+        E: newE,
+        dEdt: newDEdt,
+        d2Edt2: newD2Edt2,
+        volatility,
+        isStable
+      };
+    });
+  };
+
+  useEffect(() => {
+    if (isRunning) {
+      const interval = setInterval(() => {
+        setTime(t => t + 1);
+        updateSystem();
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [isRunning, params, time]);
+
+  useEffect(() => {
+    setData(prev => {
+      const newData = [...prev, {
+        time,
+        E: systemState.E,
+        dEdt: systemState.dEdt,
+        volatility: systemState.volatility,
+        beta: params.beta,
+        stable: systemState.isStable ? params.beta : null,
+        unstable: !systemState.isStable ? systemState.volatility : null
+      }];
+      return newData.slice(-100); // Keep last 100 points
+    });
+  }, [systemState, time]);
+
+  const reset = () => {
+    setIsRunning(false);
+    setTime(0);
+    setData([]);
+    setSystemState({
+      E: 100,
+      dEdt: 0,
+      d2Edt2: 0,
+      volatility: 0,
+      isStable: true
+    });
+  };
+
+  const loadScenario = (key) => {
+    setScenario(key);
+    setParams(scenarios[key]);
+    reset();
+  };
+
+  return (
+    <div className="w-full h-screen bg-slate-900 text-white p-6 overflow-auto">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold mb-2">UKB-Canonical Digital Twin</h1>
+          <p className="text-slate-400">Agent → Orchestration → Flows → Disciplined → Integration</p>
+        </div>
+
+        {/* Status Panel */}
+        <div className="bg-slate-800 rounded-lg p-4 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              {systemState.isStable ? (
+                <CheckCircle className="text-green-500" size={24} />
+              ) : (
+                <AlertTriangle className="text-red-500" size={24} />
+              )}
+              <span className="text-xl font-semibold">
+                System {systemState.isStable ? 'STABLE' : 'UNSTABLE'}
+              </span>
+            </div>
+            <div className="text-slate-400">t = {time}</div>
+          </div>
+          
+          <div className="grid grid-cols-5 gap-4">
+            <div className="bg-slate-700 p-3 rounded">
+              <div className="text-xs text-slate-400 mb-1">Agent (E)</div>
+              <div className="text-lg font-mono">{systemState.E.toFixed(2)}</div>
+            </div>
+            <div className="bg-slate-700 p-3 rounded">
+              <div className="text-xs text-slate-400 mb-1">Flow (dE/dt)</div>
+              <div className="text-lg font-mono">{systemState.dEdt.toFixed(2)}</div>
+            </div>
+            <div className="bg-slate-700 p-3 rounded">
+              <div className="text-xs text-slate-400 mb-1">Accel (d²E/dt²)</div>
+              <div className="text-lg font-mono">{systemState.d2Edt2.toFixed(2)}</div>
+            </div>
+            <div className="bg-slate-700 p-3 rounded">
+              <div className="text-xs text-slate-400 mb-1">Volatility √|d²E/dt²|</div>
+              <div className="text-lg font-mono">{systemState.volatility.toFixed(2)}</div>
+            </div>
+            <div className="bg-slate-700 p-3 rounded">
+              <div className="text-xs text-slate-400 mb-1">β Threshold</div>
+              <div className="text-lg font-mono">{params.beta.toFixed(2)}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Controls */}
+        <div className="grid grid-cols-2 gap-6 mb-6">
+          {/* Scenario Selection */}
+          <div className="bg-slate-800 rounded-lg p-4">
+            <h3 className="text-lg font-semibold mb-3">Scenarios</h3>
+            <div className="grid grid-cols-2 gap-2">
+              {Object.entries(scenarios).map(([key, s]) => (
+                <button
+                  key={key}
+                  onClick={() => loadScenario(key)}
+                  className={`p-2 rounded text-sm ${
+                    scenario === key 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-slate-700 hover:bg-slate-600'
+                  }`}
+                >
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Simulation Controls */}
+          <div className="bg-slate-800 rounded-lg p-4">
+            <h3 className="text-lg font-semibold mb-3">Controls</h3>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIsRunning(!isRunning)}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 p-3 rounded flex items-center justify-center gap-2"
+              >
+                {isRunning ? <Pause size={20} /> : <Play size={20} />}
+                {isRunning ? 'Pause' : 'Run'}
+              </button>
+              <button
+                onClick={reset}
+                className="flex-1 bg-slate-700 hover:bg-slate-600 p-3 rounded flex items-center justify-center gap-2"
+              >
+                <RotateCcw size={20} />
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Parameter Tuning */}
+        <div className="bg-slate-800 rounded-lg p-4 mb-6">
+          <h3 className="text-lg font-semibold mb-3">Parameters (Orchestration Layer)</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm text-slate-400 mb-1 block">
+                ε (Perturbation): {params.epsilon.toFixed(1)}
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="10"
+                step="0.1"
+                value={params.epsilon}
+                onChange={(e) => setParams({...params, epsilon: parseFloat(e.target.value)})}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-slate-400 mb-1 block">
+                β (Stability Bound): {params.beta.toFixed(1)}
+              </label>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                step="0.1"
+                value={params.beta}
+                onChange={(e) => setParams({...params, beta: parseFloat(e.target.value)})}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-slate-400 mb-1 block">
+                κ (Diffusion): {params.diffusion.toFixed(2)}
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={params.diffusion}
+                onChange={(e) => setParams({...params, diffusion: parseFloat(e.target.value)})}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-slate-400 mb-1 block">
+                γ (Damping): {params.gamma.toFixed(2)}
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="0.5"
+                step="0.01"
+                value={params.gamma}
+                onChange={(e) => setParams({...params, gamma: parseFloat(e.target.value)})}
+                className="w-full"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Visualization */}
+        <div className="bg-slate-800 rounded-lg p-4">
+          <h3 className="text-lg font-semibold mb-3">Disciplined: β ≥ √|d²E/dt²| Monitor</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+              <XAxis dataKey="time" stroke="#94a3b8" />
+              <YAxis stroke="#94a3b8" />
+              <Tooltip 
+                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+              />
+              <Legend />
+              <ReferenceLine y={0} stroke="#475569" />
+              <Line 
+                type="monotone" 
+                dataKey="volatility" 
+                stroke="#3b82f6" 
+                name="√|d²E/dt²| (Volatility)"
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="beta" 
+                stroke="#22c55e" 
+                name="β (Threshold)"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                dot={false}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="stable" 
+                stroke="#22c55e" 
+                strokeWidth={0}
+                dot={{ r: 2, fill: '#22c55e' }}
+                name="Stable Points"
+              />
+              <Line 
+                type="monotone" 
+                dataKey="unstable" 
+                stroke="#ef4444" 
+                strokeWidth={0}
+                dot={{ r: 3, fill: '#ef4444' }}
+                name="Unstable Points"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Theory Reference */}
+        <div className="mt-6 bg-slate-800 rounded-lg p-4 text-sm text-slate-300">
+          <h4 className="font-semibold mb-2">UKB-Canonical Calculus</h4>
+          <div className="font-mono space-y-1 text-xs">
+            <div>Agent: Agent(E, x) → E = {systemState.E.toFixed(2)}</div>
+            <div>Orchestration: E(t|x) + ε → ε = {params.epsilon.toFixed(1)}</div>
+            <div>Flows: dE/dt → {systemState.dEdt.toFixed(2)}</div>
+            <div>Disciplined: dĒ ± √|d²E/dt²| → {systemState.volatility.toFixed(2)} {systemState.isStable ? '≤' : '>'} {params.beta.toFixed(2)}</div>
+            <div>Integration: ∫E dt + εt + C → Accumulating...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default UKBDigitalTwin;
+```
